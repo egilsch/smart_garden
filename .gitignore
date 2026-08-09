@@ -1,0 +1,33 @@
+# C++ build outputs
+**/build/
+
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+
+# Conda
+.conda/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Secrets — never commit
+.env
+secrets.py
+*_token.txt
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
