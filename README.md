@@ -342,3 +342,30 @@ See [`hardware/bom.md`](hardware/bom.md) for full component list with Electrokit
 ---
 
 *Built in Norway. Future deployment target: Geelong, Victoria, Australia.*
+
+---
+
+## Network architecture & security
+
+The project follows the **ISA/IEC 62443 Zone and Conduit model** — the same framework used in real industrial cybersecurity. Three zones with explicit conduits between them:
+
+```
+Zone 1 — OT Field (IoT VLAN 192.168.10.0/24)
+  Pico 2WH devices — no inbound connections, publish-only MQTT with TLS client certs
+
+      ↕ Conduit: MQTT over TLS 1.3 port 8883, client certs, Pico-initiated only
+
+Zone 2 — DMZ / Edge (Raspberry Pi 5)
+  MQTT broker (TLS only) · InfluxDB (localhost) · Grafana (LAN only)
+  OPC UA server (cert auth, SignAndEncrypt) · UFW firewall · SSH key-only
+  fail2ban · unattended-upgrades · non-root service accounts
+
+      ↕ Conduit: HTTPS/TLS 1.3 outbound only, no inbound ports
+
+Zone 3 — Cloud / IT
+  InfluxDB Cloud / AWS IoT Core — scoped tokens, MFA, TLS enforced
+```
+
+See [`docs/network/NETWORK_SECURITY.md`](docs/network/NETWORK_SECURITY.md) for full IP addressing, firewall rules, certificate setup, and Wireshark packet analysis guide.
+
+See [`docs/network/SECURITY_WORKSHEET.md`](docs/network/SECURITY_WORKSHEET.md) for the implementation checklist and concepts to learn at each phase.

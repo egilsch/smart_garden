@@ -309,3 +309,58 @@ Update this file as each step is completed. Use Claude Code in VS Code to help u
 | InfluxDB v2 | Time-series database | ⬜ Install in Phase 4 |
 | Grafana | Dashboards | ⬜ Install in Phase 4 |
 | asyncua | OPC UA server | ⬜ Install in Phase 5 |
+
+---
+
+## Phase 3b — Network security & packet analysis
+
+**Goal:** Understand and implement OT/IT security — VLAN isolation, MQTT TLS, OS hardening, Wireshark packet analysis.
+**Status:** ⬜ Not started
+**Prerequisite:** Phase 3 MQTT networking complete
+**Reference:** `docs/network/SECURITY_WORKSHEET.md`
+
+### Network isolation
+- [ ] Create IoT VLAN (192.168.10.0/24) on router
+- [ ] Assign static IPs to both Picos (10.11, 10.12)
+- [ ] Verify Picos cannot reach main LAN
+- [ ] Verify Pi 5 bridges both VLANs
+
+### MQTT TLS + certificates
+- [ ] Generate CA, server, and per-Pico client certificates
+- [ ] Configure Mosquitto: TLS only, no plain port 1883
+- [ ] Configure Mosquitto ACL: Picos publish-only to their own topics
+- [ ] Embed certificates in Pico firmware
+- [ ] Test: plain connections refused, wrong-cert connections refused
+
+### Pi 5 hardening
+- [ ] UFW firewall — deny all inbound except SSH/MQTT/OPC UA from correct subnets
+- [ ] SSH key-only (disable password auth)
+- [ ] fail2ban
+- [ ] unattended-upgrades
+- [ ] Disable unused services
+
+### Wireshark packet analysis (learning exercise)
+- [ ] Install Wireshark on Ubuntu workstation
+- [ ] Capture Pico → Pi 5 traffic
+- [ ] Identify TCP handshake, TLS handshake, encrypted MQTT packets
+- [ ] Decrypt MQTT packets using TLS session key
+- [ ] Identify CONNECT, CONNACK, PUBLISH, PINGREQ packets
+- [ ] Capture OPC UA traffic on port 4840
+- [ ] Document findings in `docs/network/wireshark-notes.md`
+
+### Milestone
+- [ ] Wireshark capture shows encrypted traffic · nmap scan shows only expected ports · security worksheet Phase 3 section complete
+
+---
+
+## Updated tools list
+
+| Tool | Purpose | Status |
+|---|---|---|
+| Wireshark | Packet capture and protocol analysis | ⬜ Install before Phase 3b |
+| nmap | Network port scanning | ⬜ Install before Phase 3b |
+| openssl | Certificate generation | ⬜ Available via apt |
+| UFW | Pi 5 firewall | ⬜ Configure in Phase 3b |
+| fail2ban | SSH brute force protection | ⬜ Configure in Phase 3b |
+| MQTT Explorer | Visual MQTT debugging | ⬜ Install before Phase 3 |
+| UaExpert | OPC UA address space browser | ⬜ Install before Phase 5 |
