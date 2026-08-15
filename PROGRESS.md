@@ -105,9 +105,9 @@ Update this file as each step is completed. Use Claude Code in VS Code to help u
 
 ### Pico 2W setup
 
-- [ ] Flash first `.uf2` to Pico 2W (hold BOOTSEL, connect USB, drag and drop)
-- [ ] Verify USB serial output in VS Code terminal
-- [ ] Confirm `Hello World` prints correctly
+- [x] Flash first `.uf2` to Pico 2W (hold BOOTSEL, connect USB, drag and drop)
+- [x] Verify USB serial output in VS Code terminal
+- [x] Confirm `Hello World` prints correctly
 
 ### Sensor reading in C++
 
@@ -159,8 +159,8 @@ Update this file as each step is completed. Use Claude Code in VS Code to help u
 
 ### Pi 5 setup
 
-- [ ] Flash Raspberry Pi OS Lite (64-bit) to microSD
-- [ ] Configure headless: hostname, SSH, WiFi via Raspberry Pi Imager
+- [x] Flash Raspberry Pi OS Lite (64-bit) to microSD
+- [x] Configure headless: hostname, SSH, WiFi via Raspberry Pi Imager
 - [ ] First SSH connection from workstation (`ssh pi@smartgarden.local`)
 - [ ] Install PREEMPT_RT kernel (`sudo apt install linux-image-rt-arm64`)
 - [ ] Install Mosquitto MQTT broker
