@@ -340,9 +340,9 @@ Update this file as each step is completed. Use Claude Code in VS Code to help u
 - [ ] Disable unused services
 
 ### Wireshark packet analysis (learning exercise)
-- [ ] Install Wireshark on Ubuntu workstation
+- [x] Install Wireshark on Ubuntu workstation
 - [ ] Capture Pico → Pi 5 traffic
-- [ ] Identify TCP handshake, TLS handshake, encrypted MQTT packets
+- [] Identify TCP handshake, TLS handshake, encrypted MQTT packets
 - [ ] Decrypt MQTT packets using TLS session key
 - [ ] Identify CONNECT, CONNACK, PUBLISH, PINGREQ packets
 - [ ] Capture OPC UA traffic on port 4840
