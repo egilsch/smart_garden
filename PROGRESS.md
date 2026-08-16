@@ -92,8 +92,8 @@ Update this file as each step is completed. Use Claude Code in VS Code to help u
 - [x] BH1750 light sensor — to order (Amazon.se)
 - [x] YF-S201 flow sensor — to order (Amazon.se)
 - [x] InnoMaker LA1010 logic analyser — to order (Amazon.de)
-- [ ] Pinecil v2 soldering iron — deferred to Phase 6
-- [ ] UT139S multimeter — deferred (using existing basic multimeter for now)
+- [x] luxorparts soldering iron
+- [x] UT161E multimeter
 
 ---
 
@@ -113,8 +113,8 @@ Update this file as each step is completed. Use Claude Code in VS Code to help u
 
 - [ ] Read soil moisture sensor #1 via I2C (GP0/GP1, address 0x36)
 - [ ] Read soil moisture sensor #2 via I2C (GP2/GP3, address 0x37)
-- [ ] Read DS18B20 soil temperature via 1-Wire (GP4, 4.7kΩ pullup)
-- [ ] Read HX711 load cell (GP6 DOUT, GP7 SCK)
+- [x] Read DS18B20 soil temperature via 1-Wire (GP4, 5.1kΩ pullup)
+- [x] Read HX711 load cell (GP6 DOUT, GP7 SCK)
 - [ ] Print all sensor readings to USB serial with labels and units
 
 ### Logic analyser
@@ -160,7 +160,7 @@ Update this file as each step is completed. Use Claude Code in VS Code to help u
 ### Pi 5 setup
 
 - [x] Flash Raspberry Pi OS Lite (64-bit) to microSD
-- [x] Configure headless: hostname, SSH, WiFi via Raspberry Pi Imager
+- [ ] Configure headless: hostname, SSH, WiFi via Raspberry Pi Imager
 - [ ] First SSH connection from workstation (`ssh pi@smartgarden.local`)
 - [ ] Install PREEMPT_RT kernel (`sudo apt install linux-image-rt-arm64`)
 - [ ] Install Mosquitto MQTT broker
@@ -364,3 +364,119 @@ Update this file as each step is completed. Use Claude Code in VS Code to help u
 | fail2ban | SSH brute force protection | ⬜ Configure in Phase 3b |
 | MQTT Explorer | Visual MQTT debugging | ⬜ Install before Phase 3 |
 | UaExpert | OPC UA address space browser | ⬜ Install before Phase 5 |
+
+---
+
+## Phase 8 — Asset database and web application
+
+**Goal:** Full PLM/CMMS web app connecting ET asset data with live OT sensor readings.
+**Status:** ⬜ Not started
+**Prerequisite:** Phase 4 (InfluxDB running), Hetzner VPS provisioned
+
+### Hetzner VPS setup
+- [ ] Create Hetzner account (hetzner.com)
+- [ ] Provision CX22 server — Ubuntu 24.04, Finnish or German datacenter
+- [ ] SSH key added during provisioning
+- [ ] SSH access confirmed from workstation
+- [ ] Domain name pointed to VPS IP (optional but recommended)
+- [ ] UFW firewall configured (allow 22, 80, 443 only)
+- [ ] Nginx reverse proxy installed (routes HTTPS to FastAPI)
+- [ ] SSL certificate via Let's Encrypt (certbot)
+
+### PostgreSQL asset database
+- [ ] Install PostgreSQL on Hetzner VPS
+- [ ] Create `smartgarden` database and user
+- [ ] Run `docs/database/schema.sql` — creates all tables, views, indexes
+- [ ] Verify seed data loaded (all project assets in registry)
+- [ ] Add remaining asset documents (datasheets, manuals) to asset_documents table
+- [ ] Add wiring connections to asset_connections table
+- [ ] Test views: `active_assets_by_zone`, `connection_map`, `maintenance_due`
+
+### FastAPI backend
+- [ ] Create `webapp/` folder in repo
+- [ ] Set up FastAPI project with Jinja2 templates
+- [ ] Install dependencies: `pip install fastapi uvicorn jinja2 asyncpg plotly python-dotenv`
+- [ ] Database connection via asyncpg (async PostgreSQL driver)
+- [ ] InfluxDB connection for time-series queries
+- [ ] REST API endpoints:
+  - [ ] `GET /api/assets` — all assets
+  - [ ] `GET /api/assets/{tag}` — single asset with documents and connections
+  - [ ] `GET /api/sensor/{zone}/{measurement}` — latest reading from InfluxDB
+  - [ ] `GET /api/sensor/{zone}/{measurement}/history` — time-series from InfluxDB
+  - [ ] `POST /api/maintenance` — log a maintenance event
+  - [ ] `GET /api/alerts` — active unresolved alerts
+
+### HTMX frontend
+- [ ] Base template with navigation (`base.html`)
+- [ ] Dashboard page — live sensor cards updating every 5s via HTMX
+- [ ] Asset registry page — table of all assets, filterable by zone/type
+- [ ] Asset detail page — specs, documents, connection map, live reading, maintenance history
+- [ ] Analytics page — Plotly time-series charts for all sensor streams
+- [ ] Maintenance log page — form to log events, upcoming schedule
+
+### Integration — OT/IT/ET link
+- [ ] Each asset record linked to OPC UA node ID
+- [ ] Each asset record linked to InfluxDB measurement tag
+- [ ] Asset detail page shows live reading pulled from InfluxDB via API
+- [ ] Anomaly alerts from ML model written to asset_alerts table
+- [ ] Alert badge shown on asset in registry when active alert exists
+
+### Milestone
+- [ ] Web app publicly accessible via HTTPS on Hetzner VPS
+- [ ] All project assets in database with datasheets linked
+- [ ] Live sensor dashboard updating without page reload
+- [ ] At least one maintenance event logged per asset
+
+---
+
+## Phase 9 — Portfolio Website & Access Control
+
+**Goal:** Build a personal portfolio website that showcases this project and others. The smart garden web app sits under it as a live demo. Private by default, shareable via time-limited links for recruitment and client demos.
+**Status:** ⬜ Not started
+**Prerequisite:** Phase 8 (web app running on Hetzner VPS)
+
+### Default — private
+- [ ] Enable nginx HTTP Basic Auth on all routes
+- [ ] Generate strong password: `htpasswd -c /etc/nginx/.htpasswd yourname`
+- [ ] Verify app is inaccessible without credentials
+- [ ] Document credentials securely (password manager)
+
+### Time-limited token access
+- [ ] Add `access_tokens` table to PostgreSQL (already in schema.sql)
+- [ ] FastAPI middleware that checks token query parameter on every request
+- [ ] Token bypasses Basic Auth — direct link works without password
+- [ ] Expired or revoked tokens redirect to a clean "link expired" page
+- [ ] `accessed_count` and `last_accessed` updated on every token request
+
+### Token management CLI
+- [ ] Simple Python script to generate a token:
+      `python manage.py create-token --label "ABB interview" --days 14`
+- [ ] Script to list all active tokens with expiry and access count
+- [ ] Script to revoke a token immediately:
+      `python manage.py revoke-token --label "ABB interview"`
+
+### Subdomain / domain integration
+- [ ] Decide: subdirectory (`yourname.com/projects/smart-garden`) or subdomain (`smartgarden.yourname.com`)
+- [ ] Configure nginx reverse proxy or DNS CNAME accordingly
+- [ ] Update FastAPI `root_path` if using subdirectory
+- [ ] SSL certificate covers the new subdomain/path (Let's Encrypt)
+- [ ] Test: public URL resolves correctly, Basic Auth prompts
+
+### Milestone
+- [ ] App private by default — returns 401 without credentials
+- [ ] Generate a 7-day token and verify it works as a direct link
+- [ ] Token expires and shows "link expired" page
+- [ ] Access log shows count and timestamp of recruiter visits
+
+### Personal portfolio website
+- [ ] Design site structure:
+      `yourname.com` — landing page, about, skills, CV
+      `yourname.com/projects` — projects overview
+      `yourname.com/projects/smart-garden` — this project (live demo)
+- [ ] Choose stack: FastAPI + Jinja2 (same as web app, one codebase) or static site generator (Hugo, Astro)
+- [ ] Write content: about, skills summary, project descriptions
+- [ ] Link CV PDF for download
+- [ ] Link GitHub repos
+- [ ] Deploy on same Hetzner VPS alongside the smart garden app
+- [ ] Custom domain pointing to Hetzner VPS
+- [ ] SSL certificate covers all subdomains/paths

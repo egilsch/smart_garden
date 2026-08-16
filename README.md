@@ -369,3 +369,23 @@ Zone 3 — Cloud / IT
 See [`docs/network/NETWORK_SECURITY.md`](docs/network/NETWORK_SECURITY.md) for full IP addressing, firewall rules, certificate setup, and Wireshark packet analysis guide.
 
 See [`docs/network/SECURITY_WORKSHEET.md`](docs/network/SECURITY_WORKSHEET.md) for the implementation checklist and concepts to learn at each phase.
+
+---
+
+## Web application & asset database
+
+The project includes a full web application and asset database — a lightweight PLM/CMMS system that mirrors real industrial asset management.
+
+**Stack:** FastAPI + Jinja2 + HTMX + Plotly (Python throughout) hosted on Hetzner VPS CX22 (€4.51/month, European datacenter)
+
+**Asset database:** PostgreSQL with a full relational schema covering assets, documents, connections, maintenance log, and alerts. Every physical component in the project has a unique asset tag (e.g. `SG-PICO-001`, `SG-SENSOR-SOIL-001`) linking the ET layer (engineering data, datasheets, wiring) to the OT layer (live MQTT data, OPC UA nodes, InfluxDB measurements).
+
+**Web app routes:**
+- `/` — live dashboard, all sensor readings updated via HTMX every 5s
+- `/assets` — full asset registry with specs, documents, connection map
+- `/analytics` — time-series charts (Plotly), ET model vs actual, anomaly alerts
+- `/maintenance` — maintenance log and schedule
+
+See [`docs/architecture/ARCHITECTURE.md`](docs/architecture/ARCHITECTURE.md) for full system design, protocol map, and technology decisions.
+
+See [`docs/database/schema.sql`](docs/database/schema.sql) for the full PostgreSQL schema with seed data for all project assets.
