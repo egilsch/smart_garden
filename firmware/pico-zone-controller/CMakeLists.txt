@@ -46,7 +46,9 @@ pico_enable_stdio_usb(pico-zone-controller 1)
 
 # Add the standard library to the build
 target_link_libraries(pico-zone-controller
-        pico_stdlib)
+        pico_stdlib
+        hardware_pwm
+        hardware_gpio)
 
 # Add the standard include files to the build
 target_include_directories(pico-zone-controller PRIVATE
